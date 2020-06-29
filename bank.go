@@ -11,7 +11,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/icza/s2prot"
-	"github.com/icza/s2prot/rep"
+	"github.com/nanitefactory/sc2bankrecover/rep"
 )
 
 // NewBanksFromReplay returns all banks of all players in a replay.

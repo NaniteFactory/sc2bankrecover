@@ -1,0 +1,6 @@
+github.com/beevik/etree v1.1.0 h1:T0xke/WvNtMoCqgzPhkX2r4rjY3GDZFi+FjpRZY2Jbs=
+github.com/beevik/etree v1.1.0/go.mod h1:r8Aw8JqVegEf0w2fDnATrX9VpkMcyFeM0FhwO62wh+A=
+github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87 h1:J3vsdfseQUvLjGtt8qMe9fq8xyloW/T+tKhdXlj+EK0=
+github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87/go.mod h1:iWOw+dZSITjPKFPiCNT7QE+xENOlT/YrBtMYkImipFo=
+github.com/icza/s2prot v1.4.0 h1:8+pD/fuJzdwyXTlGy/soYiIAKALVEbqWWf6BDe2L+0o=
+github.com/icza/s2prot v1.4.0/go.mod h1:+KA56x5KbegBW5T7DJNBdk1JbzOzNd4V26UoH3LRZ7c=

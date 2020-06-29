@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/icza/s2prot/rep"
 	bankrecover "github.com/nanitefactory/sc2bankrecover"
+	"github.com/nanitefactory/sc2bankrecover/rep"
 )
 
 // Flag variables
