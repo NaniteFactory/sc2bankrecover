@@ -5,5 +5,5 @@ go 1.12
 require (
 	github.com/beevik/etree v1.1.0
 	github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87
-	github.com/icza/s2prot v1.4.1-0.20200806212907-6bd25b19fcac
+	github.com/icza/s2prot v1.4.1-0.20200825134123-6a8d8a95ef42
 )
