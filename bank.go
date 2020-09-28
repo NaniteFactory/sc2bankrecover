@@ -11,13 +11,14 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/icza/s2prot"
-	"github.com/nanitefactory/sc2bankrecover/rep"
+	"github.com/icza/s2prot/rep"
+	"github.com/nanitefactory/sc2bankrecover/repm"
 )
 
 // NewBanksFromReplay returns all banks of all players in a replay.
 // ret[iPlayer][strBankName] gives a pointer to a bank,
 // where player index starts from 0 excluding the neutral force.
-func NewBanksFromReplay(r *rep.Rep) (ret []map[string]*Bank) {
+func NewBanksFromReplay(r *repm.Rep) (ret []map[string]*Bank) {
 	isBankEvent := func(gameEvent s2prot.Event) bool {
 		for _, bankEvt := range []string{
 			EvtTypeBankFile,
@@ -74,14 +75,14 @@ const (
 
 // Bank represents a bank of a player.
 type Bank struct {
-	r          *rep.Rep
+	r          *repm.Rep
 	Name       string     // filename
 	Player     rep.Player // owner
 	GameEvents []s2prot.Event
 }
 
 // NewBank is a constructor. Returns nil upon error.
-func NewBank(r *rep.Rep, evtBankFile s2prot.Event, player rep.Player) *Bank {
+func NewBank(r *repm.Rep, evtBankFile s2prot.Event, player rep.Player) *Bank {
 	if evtBankFile.EvtType.Name != EvtTypeBankFile {
 		return nil
 	}

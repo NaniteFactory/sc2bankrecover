@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	bankrecover "github.com/nanitefactory/sc2bankrecover"
-	"github.com/nanitefactory/sc2bankrecover/rep"
+	"github.com/nanitefactory/sc2bankrecover/repm"
 )
 
 // Flag variables
@@ -36,7 +36,7 @@ func main() {
 	}()
 
 	// get rep
-	r, err := rep.NewFromFile(filepath.Join(wd, *flagFileName))
+	r, err := repm.NewFromFile(filepath.Join(wd, *flagFileName))
 	if err != nil {
 		fmt.Printf("Failed to open file: %v\n", err) // likely to return unsupported version error
 		return
