@@ -5,5 +5,5 @@ go 1.15
 require (
 	github.com/beevik/etree v1.1.0
 	github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87
-	github.com/icza/s2prot v1.4.1-0.20200927191552-2f1248f765db
+	github.com/icza/s2prot v1.4.1-0.20201104092848-c0915f5987f2
 )
