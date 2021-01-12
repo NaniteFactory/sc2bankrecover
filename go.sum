@@ -5,3 +5,5 @@ github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87 h1:J3vsdfseQUvLjGtt8qMe9f
 github.com/icza/mpq v0.0.0-20200521101201-ff3251015c87/go.mod h1:iWOw+dZSITjPKFPiCNT7QE+xENOlT/YrBtMYkImipFo=
 github.com/icza/s2prot v1.4.1-0.20201207183138-07cda4ef3d81 h1:pqQtUhlFxXBYIu/YH4XFmrGvK5NEamTvmmuK6r3FW9Y=
 github.com/icza/s2prot v1.4.1-0.20201207183138-07cda4ef3d81/go.mod h1:Aw3BgGOZ83Qkxmz90i22WFCMiDU4oOFT5D3hoDLBl3E=
+github.com/icza/s2prot v1.4.1-0.20210110175251-8eb1a5e3dddf h1:/AFKC/rH1f/KeWj2txr1eu0Tx3GbOuXejn17KV/KGEE=
+github.com/icza/s2prot v1.4.1-0.20210110175251-8eb1a5e3dddf/go.mod h1:Aw3BgGOZ83Qkxmz90i22WFCMiDU4oOFT5D3hoDLBl3E=
