@@ -61,10 +61,16 @@ func main() {
 	}
 
 	// 3
+	for _, slot := range r.InitData.LobbyState.Slots {
+		fmt.Printf("\tUserID: %v, Observe: %v, Team: %d, WorkingSetSlotID: %v, Toon: %v\n",
+			slot.UserID(), slot.Observe().Name, slot.TeamID()+1, slot.WorkingSetSlotID(), slot.ToonHandle())
+	}
+
+	// 4
 	fmt.Println("Begin")
 	for iPlayer, playerBanks := range bankrecover.NewBanksFromReplay(r) {
 		for bankName, bank := range playerBanks {
-			d := fmt.Sprintf("%d__%s", iPlayer, bank.Player.Toon)
+			d := fmt.Sprintf("%d__%s", iPlayer, bank.User.ToonHandle())
 			f := fmt.Sprintf("%s.SC2Bank", bankName)
 			log.Println("Save file: ", filepath.Join(d, f))
 			if err := bank.SaveAsFile(filepath.Join(wd, d, f)); err != nil {

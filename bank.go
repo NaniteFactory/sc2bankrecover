@@ -33,12 +33,32 @@ func NewBanksFromReplay(r *repm.Rep) (ret []map[string]*Bank) {
 		}
 		return false
 	}
+	r.InitData.GameDescription.MaxObservers()
 
-	// Player index starts from 0 excluding the neutral force.
-	playersBanks := make([]map[string]*Bank, len(r.Details.Players())) // banks
-	for iPlayer := range playersBanks {
-		playersBanks[iPlayer] = map[string]*Bank{}
+	// Player index starts from 0 excluding the neutral force. It ranges [0 ~ 9] when there are 10 players in a game.
+	// The number of players could be smaller than the actual number of lobby participants since there could be spectators.
+	// Slots include both players and spectators.
+	usersBank := make([]map[string]*Bank, len(r.InitData.LobbyState.Slots)) // banks
+	for iUser := range usersBank {
+		usersBank[iUser] = map[string]*Bank{}
 	}
+	// Slots
+	type PlayerSlot struct {
+		rep.Slot
+		index int
+	}
+	findSlotByUserID := func() map[int64]PlayerSlot {
+		ret := map[int64]PlayerSlot{}
+		for iSlot, slot := range r.InitData.LobbyState.Slots {
+			if slot.ToonHandle() != "" { // not to be overwritten
+				ret[slot.UserID()] = PlayerSlot{
+					Slot:  slot,
+					index: iSlot,
+				}
+			}
+		}
+		return ret
+	}()
 	// Collect banks events
 	var bankNameCurr string
 	for _, evt := range r.GameEvts {
@@ -48,20 +68,22 @@ func NewBanksFromReplay(r *repm.Rep) (ret []map[string]*Bank) {
 		if !isBankEvent(evt) {
 			continue
 		}
+
+		slot := findSlotByUserID[evt.UserID()] // get player slot
 		if evt.EvtType.Name == EvtTypeBankFile {
 			bankNameCurr = evt.Stringv("name")
-			playersBanks[evt.UserID()][bankNameCurr] = NewBank(r, evt, r.Details.Players()[evt.UserID()])
-			// log.Println(evt.UserID(), bankNameCurr) //
+			usersBank[slot.index][bankNameCurr] = NewBank(r, evt, slot.Slot)
+			// log.Println(slot.index, bankNameCurr) //
 			continue
 		}
-		if playersBanks[evt.UserID()][bankNameCurr] != nil {
+		if usersBank[slot.index][bankNameCurr] != nil {
 			// log.Println("Warning: Bank event of unknown bank file: ", evt) // probably map maker's fault //
-			playersBanks[evt.UserID()][bankNameCurr].AddGameEvent(evt)
+			usersBank[slot.index][bankNameCurr].AddGameEvent(evt)
 		}
 		continue
 	}
 
-	return playersBanks
+	return usersBank
 }
 
 // NNet event protocol types regarding bank
@@ -76,20 +98,20 @@ const (
 // Bank represents a bank of a player.
 type Bank struct {
 	r          *repm.Rep
-	Name       string     // filename
-	Player     rep.Player // owner
+	Name       string   // filename
+	User       rep.Slot // owner
 	GameEvents []s2prot.Event
 }
 
 // NewBank is a constructor. Returns nil upon error.
-func NewBank(r *repm.Rep, evtBankFile s2prot.Event, player rep.Player) *Bank {
+func NewBank(r *repm.Rep, evtBankFile s2prot.Event, user rep.Slot) *Bank {
 	if evtBankFile.EvtType.Name != EvtTypeBankFile {
 		return nil
 	}
 	return &Bank{
 		r:          r,
 		Name:       evtBankFile.Stringv("name"),
-		Player:     player,
+		User:       user,
 		GameEvents: []s2prot.Event{evtBankFile},
 	}
 }
@@ -127,7 +149,7 @@ func (bank *Bank) WriteTo(w io.Writer) (n int64, err error) {
 	root.CreateComment(fmt.Sprint("Version: ", bank.r.Header.VersionString()))
 	root.CreateComment(fmt.Sprint("Loops: ", bank.r.Header.Loops()))
 	root.CreateComment(fmt.Sprint("Length: ", bank.r.Header.Duration()))
-	root.CreateComment(fmt.Sprint("Player: ", bank.Player.Toon))
+	root.CreateComment(fmt.Sprint("Player: ", bank.User.ToonHandle()))
 
 	var eCurrSection *etree.Element
 	var eCurrKey *etree.Element
