@@ -42,6 +42,15 @@ func NewBanksFromReplay(r *repm.Rep) (ret []map[string]*Bank) {
 	for iUser := range usersBank {
 		usersBank[iUser] = map[string]*Bank{}
 	}
+	findPlayerByToonHandle := func() map[string]rep.Player {
+		ret := map[string]rep.Player{}
+		for _, player := range r.Details.Players() {
+			if player.Toon.String() != "" { // not to be overwritten
+				ret[player.Toon.String()] = player
+			}
+		}
+		return ret
+	}()
 	// Slots
 	type PlayerSlot struct {
 		rep.Slot
@@ -68,17 +77,18 @@ func NewBanksFromReplay(r *repm.Rep) (ret []map[string]*Bank) {
 		if !isBankEvent(evt) {
 			continue
 		}
-
-		slot := findSlotByUserID[evt.UserID()] // get player slot
-		if evt.EvtType.Name == EvtTypeBankFile {
-			bankNameCurr = evt.Stringv("name")
-			usersBank[slot.index][bankNameCurr] = NewBank(r, evt, slot.Slot)
-			// log.Println(slot.index, bankNameCurr) //
-			continue
-		}
-		if usersBank[slot.index][bankNameCurr] != nil {
-			// log.Println("Warning: Bank event of unknown bank file: ", evt) // probably map maker's fault //
-			usersBank[slot.index][bankNameCurr].AddGameEvent(evt)
+		{ // slot
+			slot := findSlotByUserID[evt.UserID()] // get player slot
+			if evt.EvtType.Name == EvtTypeBankFile {
+				bankNameCurr = evt.Stringv("name")
+				usersBank[slot.index][bankNameCurr] = NewBank(r, evt, slot.Slot, findPlayerByToonHandle[slot.ToonHandle()])
+				// log.Println(slot.index, bankNameCurr) //
+				continue
+			}
+			if usersBank[slot.index][bankNameCurr] != nil {
+				// log.Println("Warning: Bank event of unknown bank file: ", evt) // probably map maker's fault //
+				usersBank[slot.index][bankNameCurr].AddGameEvent(evt)
+			}
 		}
 		continue
 	}
@@ -98,20 +108,22 @@ const (
 // Bank represents a bank of a player.
 type Bank struct {
 	r          *repm.Rep
-	Name       string   // filename
-	User       rep.Slot // owner
+	Name       string     // filename
+	UserSlot   rep.Slot   // owner slot
+	Player     rep.Player // owner player
 	GameEvents []s2prot.Event
 }
 
 // NewBank is a constructor. Returns nil upon error.
-func NewBank(r *repm.Rep, evtBankFile s2prot.Event, user rep.Slot) *Bank {
+func NewBank(r *repm.Rep, evtBankFile s2prot.Event, user rep.Slot, player rep.Player) *Bank {
 	if evtBankFile.EvtType.Name != EvtTypeBankFile {
 		return nil
 	}
 	return &Bank{
 		r:          r,
 		Name:       evtBankFile.Stringv("name"),
-		User:       user,
+		UserSlot:   user,
+		Player:     player,
 		GameEvents: []s2prot.Event{evtBankFile},
 	}
 }
@@ -149,7 +161,7 @@ func (bank *Bank) WriteTo(w io.Writer) (n int64, err error) {
 	root.CreateComment(fmt.Sprint("Version: ", bank.r.Header.VersionString()))
 	root.CreateComment(fmt.Sprint("Loops: ", bank.r.Header.Loops()))
 	root.CreateComment(fmt.Sprint("Length: ", bank.r.Header.Duration()))
-	root.CreateComment(fmt.Sprint("Player: ", bank.User.ToonHandle()))
+	root.CreateComment(fmt.Sprint("Player: ", bank.UserSlot.ToonHandle()))
 
 	var eCurrSection *etree.Element
 	var eCurrKey *etree.Element

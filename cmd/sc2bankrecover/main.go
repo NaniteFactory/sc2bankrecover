@@ -70,7 +70,7 @@ func main() {
 	fmt.Println("Begin")
 	for iPlayer, playerBanks := range bankrecover.NewBanksFromReplay(r) {
 		for bankName, bank := range playerBanks {
-			d := fmt.Sprintf("%d__%s", iPlayer, bank.User.ToonHandle())
+			d := fmt.Sprintf("%d__%s", iPlayer, bank.UserSlot.ToonHandle())
 			f := fmt.Sprintf("%s.SC2Bank", bankName)
 			log.Println("Save file: ", filepath.Join(d, f))
 			if err := bank.SaveAsFile(filepath.Join(wd, d, f)); err != nil {
