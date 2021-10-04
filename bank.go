@@ -183,7 +183,12 @@ func (bank *Bank) WriteTo(w io.Writer) (n int64, err error) {
 			if nType == 7 { // value will be in the next message
 				continue
 			}
-			eVal := eCurrKey.CreateElement(evt.Stringv("name"))
+			eVal := eCurrKey.CreateElement(func() string {
+				if name := evt.Stringv("name"); name != eCurrKey.Attr[0].Value {
+					return name
+				}
+				return "Value"
+			}())
 			eVal.CreateAttr([]string{
 				"fixed",
 				"flag",
